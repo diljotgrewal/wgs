@@ -1,8 +1,16 @@
 # Whole Genome Pipelines
 
 
+Welcome to the home page for the whole genome sequencing pipelines documentation.
 
+## Contents
 
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+    setup_dev_env
+   
 ### setup and Installation:
 
 Set up conda with the required packages.
