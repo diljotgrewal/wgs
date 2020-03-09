@@ -5,11 +5,8 @@ Welcome to the home page for the whole genome sequencing pipelines documentation
 
 ## Contents
 
-.. toctree::
-   :maxdepth: 2
-   :glob:
+- [Heading](setup_dev_env.md)
 
-    setup_dev_env
    
 ### setup and Installation:
 
