@@ -22,7 +22,7 @@ mkdir realignment && cd realignment
 wget https://wgstestsets.blob.core.windows.net/testsets/realignment/A20875_3_lanes_dupsFlagged_chr22_paired.bam
 wget https://wgstestsets.blob.core.windows.net/testsets/realignment/A20875_3_lanes_dupsFlagged_chr22_paired.bam.bai
 wget https://wgstestsets.blob.core.windows.net/testsets/realignment/config.yaml
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/context.yaml
+wget https://wgstestsets.blob.core.windows.net/testsets/context.yaml
 wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa
 wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.amb
 wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.ann
@@ -60,12 +60,9 @@ cd cna
 ```
 At this point, you should be in a new working directory with all the testdata you need to run the pipeline.
 In addition, you will have three `yaml` files: `input.yaml`, `config.yaml` and `context.yaml`. 
-<br/><br/>
-`input.yaml`: specifies the testdata files you are using.
-<br/><br/>
-`config.yaml`: specifies subpipeline specific parameters.
-<br/><br/>
-`context.yaml`: specifies information used by the pipeline to run locally in docker.
+<br/><br/>`input.yaml`: specifies the testdata files you are using.
+<br/><br/>`config.yaml`: specifies subpipeline specific parameters.
+<br/><br/>`context.yaml`: specifies information used by the pipeline to run locally in docker.
 
 ### Running a Subpipeline with Testdata locally
 
