@@ -12,25 +12,12 @@ Just copy and paste the below commands for the subpipeline you which to run.
 #### Alignment
 ```
 wget https://wgstestsets.blob.core.windows.net/testsets/alignment.tar && tar -xvf alignment.tar 
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/config.yaml && mv config.yaml alignment
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/context.yaml && mv context.yaml alignment
 cd alignment
 ```
 #### Realignment
 ```
-mkdir realignment && cd realignment
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/A20875_3_lanes_dupsFlagged_chr22_paired.bam
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/A20875_3_lanes_dupsFlagged_chr22_paired.bam.bai
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/config.yaml
-wget https://wgstestsets.blob.core.windows.net/testsets/context.yaml
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.amb
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.ann
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.bwt
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.pac
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/Homo_sapiens.NCBI36.54.dna.chromosome.22.fa.sa
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/input.yaml
-wget https://wgstestsets.blob.core.windows.net/testsets/realignment/README.md
+wget https://wgstestsets.blob.core.windows.net/testsets/realignment.tar && tar -xvf realignment.tar 
+cd realignment
 ```
 #### Variant Calling
 ```
@@ -63,6 +50,12 @@ In addition, you will have three `yaml` files: `input.yaml`, `config.yaml` and `
 <br/><br/>`input.yaml`: specifies the testdata files you are using.
 <br/><br/>`config.yaml`: specifies subpipeline specific parameters.
 <br/><br/>`context.yaml`: specifies information used by the pipeline to run locally in docker.
+
+You will also have a file names `make.py`. Before you can turn to running the pipeline, you must customize the yaml files for your environment and directory structure. To do this, execute 
+```
+python make.py
+```
+
 
 ### Running a Subpipeline with Testdata locally
 
