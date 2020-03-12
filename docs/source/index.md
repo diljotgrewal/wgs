@@ -21,21 +21,12 @@ cd realignment
 ```
 #### Variant Calling
 ```
-mkdir variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/normal.bam && mv normal.bam variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/normal.bam.bai && mv normal.bam.bai variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/tumour.bam && mv tumour.bam variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/tumour.bam.bai && mv tumour.bam.bai variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/input.yaml && mv input.yaml variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/config.yaml && mv config.yaml variant_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/context.yaml && mv context.yaml variant_calling
+wget https://wgstestsets.blob.core.windows.net/testsets/variant_calling.tar && tar -xvf variant_calling.tar 
 cd variant_calling
 ```
 #### SV Calling
 ```
-wget https://wgstestsets.blob.core.windows.net/testsets/sv_calling.tar && tar -xvf sv_calling.tar
-wget https://wgstestsets.blob.core.windows.net/testsets/config.yaml && mv config.yaml sv_calling
-wget https://wgstestsets.blob.core.windows.net/testsets/context.yaml && mv context.yaml sv_calling
+wget https://wgstestsets.blob.core.windows.net/testsets/sv_calling.tar && tar -xvf sv_calling.tar 
 cd sv_calling
 ```
 #### Copy Number Calling
@@ -51,11 +42,22 @@ In addition, you will have three `yaml` files: `input.yaml`, `config.yaml` and `
 <br/><br/>`config.yaml`: specifies subpipeline specific parameters.
 <br/><br/>`context.yaml`: specifies information used by the pipeline to run locally in docker.
 
-You will also have a file names `make.py`. Before you can turn to running the pipeline, you must customize the yaml files for your environment and directory structure. To do this, execute 
+You will also have one or two python files: `make.py` and `make_ref.py`. If the tar you downloaded 
+does not include `make_ref.py`, it just means all the reference data you need is included in your download.
+
+### Customizing the yamls with local paths
+
+`make.py` simply customizes the yaml files to use your working directory. Simply execute 
 ```
 python make.py
 ```
-
+If you do `make_ref.py` is included in the tar you downloaded, it means additional reference data is needed to 
+run the subpipeline. This data was not included in the tar because of its large size. Go to __TODO: GET REF DATA PAGE___
+To download the reference data to run the given subpipeline. Then, execute
+```
+python make_ref.py {directory with downloaded reference data}
+```
+Once you've run these two python files, your ready to make the pipeline run command.
 
 ### Running a Subpipeline with Testdata locally
 
