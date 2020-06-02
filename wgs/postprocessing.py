@@ -10,6 +10,7 @@ from wgs.workflows import postprocessing
 
 
 def postprocessing_workflow(args):
+
     yamldata = yaml.safe_load(open(args['input_yaml']))
 
     samples = list(yamldata.keys())
@@ -25,6 +26,7 @@ def postprocessing_workflow(args):
     somatic_calls = {sample: yamldata[sample]['somatic_calls'] for sample in samples}
 
     out_dir = args['out_dir']
+
     meta_yaml = os.path.join(out_dir, 'pipeline_metadata.yaml')
     input_yaml_blob = os.path.join(out_dir, 'input.yaml')
 
@@ -42,7 +44,6 @@ def postprocessing_workflow(args):
         obj=mgd.OutputChunks('sample_id'),
         value=samples
     )
-
 
     workflow.subworkflow(
         name="postprocessing",

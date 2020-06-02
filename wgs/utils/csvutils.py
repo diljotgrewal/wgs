@@ -345,6 +345,7 @@ def concatenate_csv(in_filenames, out_filename, key_column=None, write_header=Tr
         if key_column is not None:
             df[key_column] = str(key)
         data.append(df)
+
     data = pd.concat(data, ignore_index=True)
 
     csvoutput = CsvOutput(out_filename, header=write_header, sep=sep)
