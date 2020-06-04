@@ -108,11 +108,13 @@ def parse_roh(roh_calls, parsed):
 
 
 def samtools_coverage(bam_file, bed_file, output, docker_image=None):
+    print(bed_file)
 
     command = ["samtools", "bedcov", bed_file, bam_file, ">", output]
 
     pypeliner.commandline.execute(*command, docker_image=docker_image)
-
+    print("jere")
+    cc
     df_out = pd.read_csv(output, sep="\t", names=["chrom", "start", "end", "sum_cov"])
     df_out.to_csv(output, sep="\t", index=False, header=True)
 
