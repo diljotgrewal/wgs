@@ -27,9 +27,6 @@ def circos(titan_calls, sample_id, sv_calls,
     prepped_remixt_calls = os.path.join(tempdir, 'prepped_remixt_calls.csv')
     read_remixt.make_for_circos(remixt_calls, sample_id, prepped_remixt_calls)
 
-    # circos = ["singularity", "run", "--bind", "/admin", "--bind", "/common", "--bind",
-    #           "/juno/work",  "docker://docker.io/wgspipeline/circos:v0.0.1"]
-
     cmd = ["circos.R", prepped_titan_calls, prepped_remixt_calls, sv_calls,
            circos_plot_remixt, circos_plot_titan, sample_id]
 
