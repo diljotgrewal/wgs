@@ -6,7 +6,10 @@ import os
 
 def get_coverage_data(input_bam, output, refdir, single_node=False):
     chromosomes = config.refdir_data(refdir)['params']['chromosomes']
+    bins = config.refdir_data(refdir)['params']['bins']
+
     chrom_sizes = config.refdir_data(refdir)['paths']['chrom_sizes']
+    reference = config.refdir_data(refdir)['paths']['reference']
 
     workflow = pypeliner.workflow.Workflow()
 
@@ -18,9 +21,10 @@ def get_coverage_data(input_bam, output, refdir, single_node=False):
                 memory=5
             ),
             args=(
+                reference,
                 mgd.TempOutputFile('coverage_bed.bed'),
                 chromosomes,
-                mgd.InputFile(chrom_sizes),
+                bins,
             )
         )
         workflow.transform(
@@ -52,10 +56,10 @@ def get_coverage_data(input_bam, output, refdir, single_node=False):
             ),
             axes=('chromosome',),
             args=(
+                reference,
                 mgd.TempOutputFile('coverage_bed.bed', 'chromosome'),
                 mgd.InputInstance('chromosome'),
-                mgd.InputFile(chrom_sizes),
-
+                bins,
             )
         )
         workflow.transform(

@@ -6,7 +6,7 @@ from wgs.workflows.postprocessing import genome_wide_plot
 from wgs_qc_utils.reader import read_titan, read_remixt
 from wgs_qc_utils.plotter import gene_annotation_plotting
 from wgs.utils import helpers
-
+import pysam
 
 def get_gene_annotations( outfile):
 
@@ -51,28 +51,37 @@ def bin_data(positions, copy_number, state, n_bins, start, extent):
                          "state": state})
 
 
-def generate_coverage_bed(bins_out, chromosome, chromosome_sizes):
-    chroms = pd.read_csv(chromosome_sizes, sep="\t")
+def generate_coverage_bed(ref, bins_out, chromosomes, bins_per_chrom=2000):
+    fasta = pysam.FastaFile(ref)
+
+    chroms = dict(zip(fasta.references, fasta.lengths))
+    chroms = {k:v for k, v in chroms.items() if k in chromosomes}
 
     chroms_all = []
     starts_all = []
     ends_all = []
 
-    for chrom, length in zip(chroms.chrom, chroms.length):
+    for chrom, length in chroms.items():
 
-        starts = list(range(0, length-100000, 100000))
-        ends = list(range(100000, length, 100000))
+        step_size = int(length / bins_per_chrom)
+
+        starts = [str(int(i * step_size) + 1) for i in range(bins_per_chrom)]
+        ends = [str(int((i + 1) * step_size)) for i in range(bins_per_chrom)]
+
         assert len(starts) == len(ends)
         chroms = [chrom] * len(starts)
 
         starts_all += starts
         ends_all += ends
         chroms_all += chroms
+
     out = pd.DataFrame({"chrom": chroms_all, "starts": starts_all, "ends": ends_all})
-    out = out.iloc[::2, :]
-    out = out[out.chrom == chromosome]
+
+    out = out[out.chrom.isin(chromosomes)]
 
     out.to_csv(bins_out, sep="\t", index=False, header=False)
+
+
 
 
 def prep_sv_for_circos(sv_calls, outfile):
@@ -99,40 +108,6 @@ def parse_roh(roh_calls, parsed):
         for line in lines:
             f.write("%s\n" % line)
     f.close()
-    print("leaving")
-
-# def count_depth(regions, input):
-#     """
-#     Count the depth of the read. For each genomic coordonate return the
-#     Count the depth of the read. For each genomic coordonate return the
-#     number of reads
-#     -----
-#     Parameters :
-#         chr : (str) name of the chromosome
-#     -----
-#     Returns :
-#         none
-#     """
-#     bamfile = pysam.AlignmentFile(input, 'rb')
-#
-#     output_values = [None] * len(regions)
-#
-#     for i, region in enumerate(regions):
-#         chrom, start, stop = region.split('_')
-#
-#         start = int(start)
-#         stop = int(stop)
-#         size = stop - start
-#
-#         running_count = 0
-#
-#         for pileupcolumn in bamfile.pileup(chrom, start, stop, stepper='nofilter'):
-#
-#             running_count += pileupcolumn.nsegments
-#
-#         output_values[i] = (chrom, start, stop, running_count / size)
-#
-#     return output_values
 
 
 def samtools_coverage(bam_file, bed_file, output, docker_image=None):
@@ -143,37 +118,6 @@ def samtools_coverage(bam_file, bed_file, output, docker_image=None):
 
     df_out = pd.read_csv(output, sep="\t", names=["chrom", "start", "end", "sum_cov"])
     df_out.to_csv(output, sep="\t", index=False, header=True)
-    # out = coverage_plotting.read("/juno/work/shah/abramsd/CODE/inputs/merged007_TT")
-    # cov = coverage_plotting.prepare_at_chrom(out, chromosomes)
-    #
-    # cov.to_csv(output, sep="\t", index=False)
-    # intervals = generate_intervals(reference, chromosomes, bins_per_chrom=bins_per_chrom)
-    #
-    # counts = count_depth(intervals, bam_file)
-    #
-    # with helpers.GetFileHandle(output, 'w') as outfile:
-    #     outfile.write('chrom,start,stop,coverage\n')
-    #     for value in counts:
-    #         value = ','.join(map(str, value)) + '\n'
-    #         outfile.write(value)
-
-
-# def generate_intervals(ref, chromosome, bins_per_chrom=2000):
-#     fasta = pysam.FastaFile(ref)
-#     chrom_lengths = dict(zip(fasta.references, fasta.lengths))
-#     assert chromosome in chrom_lengths.keys()
-#
-#     length = chrom_lengths[chromosome]
-#
-#     intervals = [None] * bins_per_chrom
-#
-#     step_size = int(length / bins_per_chrom)
-#
-#     for i in range(bins_per_chrom):
-#         start = str(int(i * step_size) + 1)
-#         end = str(int((i + 1) * step_size))
-#         intervals[i] = str(chromosome) + "_" + start + "_" + end
-#     return intervals
 
 
 def genome_wide(
