@@ -238,3 +238,4 @@ def create_postprocessing_workflow(
             kwargs={'docker_image': config.containers('circos')}
         )
 
+    return workflow
