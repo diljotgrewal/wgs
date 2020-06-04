@@ -77,7 +77,7 @@ def generate_coverage_bed(ref, bins_out, chromosomes, bins_per_chrom=2000):
 
     out = pd.DataFrame({"chrom": chroms_all, "starts": starts_all, "ends": ends_all})
 
-    out = out[out.chrom.isin(chromosomes)]
+    out = out[out.chrom == chromosomes]
 
     out.to_csv(bins_out, sep="\t", index=False, header=False)
 
