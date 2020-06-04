@@ -109,7 +109,7 @@ def parse_roh(roh_calls, parsed):
 
 def samtools_coverage(bam_file, bed_file, output, docker_image=None):
     print(bed_file)
-
+cc
     command = ["samtools", "bedcov", bed_file, bam_file, ">", output]
 
     pypeliner.commandline.execute(*command, docker_image=docker_image)
