@@ -16,7 +16,7 @@ def get_gene_annotations( outfile):
 
 
 def circos(titan_calls, sample_id, sv_calls,
-           circos_plot_remixt, circos_plot_titan, tempdir, remixt_calls="NULL",
+           circos_plot_remixt, circos_plot_titan, tempdir, remixt_calls=None,
            docker_image=None):
 
     helpers.makedirs(tempdir)
