@@ -23,10 +23,14 @@ def circos(titan_calls, sample_id, sv_calls,
 
     prepped_titan_calls = os.path.join(tempdir, 'prepped_titan_calls.csv')
     read_titan.make_for_circos(titan_calls, prepped_titan_calls)
-
-    prepped_remixt_calls = os.path.join(tempdir, 'prepped_remixt_calls.csv')
-    read_remixt.make_for_circos(remixt_calls, sample_id, prepped_remixt_calls)
-
+    
+    if remixt_calls != "NULL":
+        
+        prepped_remixt_calls = os.path.join(tempdir, 'prepped_remixt_calls.csv')
+        read_remixt.make_for_circos(remixt_calls, sample_id, prepped_remixt_calls)
+    else:
+        prepped_remixt_calls = remixt_calls
+        
     # circos = ["singularity", "run", "--bind", "/admin", "--bind", "/common", "--bind",
     #           "/juno/work",  "docker://docker.io/wgspipeline/circos:v0.0.1"]
 
