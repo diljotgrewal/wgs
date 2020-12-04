@@ -118,7 +118,7 @@ def make_R_cohort_plots(
         filtered_maf = cohort_maf
 
     plots_cmd = [
-        "maftools_plots.R", cohort_maf, cntable, filtered_maf,
+        "~/miniconda3/envs/r-environment/bin/maftools_plots.R", cohort_maf, cntable, filtered_maf,
         oncoplot_path, somatic_interactions, mafsummary
     ]
 
