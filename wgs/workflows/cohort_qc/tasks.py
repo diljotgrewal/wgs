@@ -81,7 +81,7 @@ def annotate_maf_with_oncokb(
     helpers.makedirs(tmpspace)
 
     cmd = [
-        "MafAnnotator.py", "-i", maf, "-o", annotated_maf, "-b", api_key
+        "/juno/work/shah/abramsd/oncokb-annotator/MafAnnotator.py", "-i", maf, "-o", annotated_maf, "-b", api_key
     ]
 
     pypeliner.commandline.execute(*cmd, docker_image=docker_image)
@@ -118,7 +118,7 @@ def make_R_cohort_plots(
         filtered_maf = cohort_maf
 
     plots_cmd = [
-        "~/miniconda3/envs/r-environment/bin/maftools_plots.R", cohort_maf, cntable, filtered_maf,
+        "maftools_plots.R", cohort_maf, cntable, filtered_maf,
         oncoplot_path, somatic_interactions, mafsummary
     ]
 
