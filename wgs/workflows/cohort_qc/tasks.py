@@ -46,7 +46,7 @@ def classify_remixt(sample_label, remixt, gtf, output_dir, amps, dels, docker_im
 def merge_mafs(mafs, merged_maf, write_header=True):
     for m in mafs:
 
-        maf = pd.read_csv(m, sep="\t", chunksize=10e6)
+        maf = pd.read_csv(m, sep="\t", chunksize=10e4)
         for chunk in maf:
 
             chunk.to_csv(merged_maf, sep="\t", index=False, header=write_header, mode='a')
@@ -63,7 +63,7 @@ def merge_relabel_mafs(mafs, merged_maf, labels, class_label=None, write_header=
     #TODO better v names
     for label, maf in zip(labels, mafs):
         if maf:
-            maf = pd.read_csv(maf, sep="\t", chunksize=10e6, skiprows=1)
+            maf = pd.read_csv(maf, sep="\t", chunksize=10e4, skiprows=1)
             for chunk in maf:
                 if labels:
                     chunk["Tumor_Sample_Barcode"] = [label] * len(chunk.index)
@@ -98,9 +98,8 @@ def filter_annotated_maf(annotated_maf, filtered_maf):
 
 
 def plot_mutation_burden(maf, burden_plot_path):
-    maf = pd.read_csv(maf, sep="\t").drop_duplicates()
+    chunks = maf = pd.read_csv(maf, sep="\t", usecols=["Tumor_Sample_Barcode"])
     data = maf.groupby("Tumor_Sample_Barcode").size().sort_values(ascending=False)
-
     fig, axis = plt.subplots(figsize=(15, 5))
     nums = range(len(data.index))
     axis.bar(nums, data, align='center', color="black")
@@ -127,7 +126,7 @@ def make_R_cohort_plots(
 
 def make_report(cohort_label, oncoplot, somatic_interactions, mafsummary, burden_plot, report_path):
     cmd = [
-        "run_report.sh", report_path, cohort_label, oncoplot,
+        "un_cohort_qc_report.sh", report_path, cohort_label, oncoplot,
         somatic_interactions, mafsummary, burden_plot
     ]
     pypeliner.commandline.execute(*cmd)
