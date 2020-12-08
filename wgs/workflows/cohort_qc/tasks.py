@@ -126,7 +126,7 @@ def make_R_cohort_plots(
 
 def make_report(cohort_label, oncoplot, somatic_interactions, mafsummary, burden_plot, report_path):
     cmd = [
-        "un_cohort_qc_report.sh", report_path, cohort_label, oncoplot,
+        "run_cohort_qc_report.sh", report_path, cohort_label, oncoplot,
         somatic_interactions, mafsummary, burden_plot
     ]
     pypeliner.commandline.execute(*cmd)
