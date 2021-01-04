@@ -45,6 +45,8 @@ In order to run the pipeline you also need to use R scripts installable in this 
 
 
 ## WGS sample qc
+![cohort_qc](workflow_images/sample_qc_workflow.png )
+
 1. The format of the input yaml for wgs sample qc:
 ```
 Patient:
