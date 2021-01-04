@@ -63,13 +63,9 @@ def _write_maf(m, label, merged_maf, write_header):
         write_header=False   
 
 
-def merge_mafs(sample_labels, cohort, germline_mafs, somatic_mafs, merged_maf):
+def merge_mafs(sample_labels, cohort, somatic_mafs, merged_maf):
     write_header=True
 
-    for label, m in germline_mafs.items():
-        new_t_barcode = sample_labels[(cohort, label)]
-        _write_maf(m, new_t_barcode, merged_maf, write_header)
-        write_header=False
 
     for label, m in somatic_mafs.items():
         new_t_barcode = sample_labels[(cohort, label)]

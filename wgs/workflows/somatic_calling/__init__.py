@@ -58,7 +58,6 @@ def create_somatic_calling_workflow(
         obj=mgd.OutputChunks('sample_id'),
         value=samples)
 
-
     workflow.setobj(
         obj=mgd.TempOutputObj('normal_id', 'sample_id', axes_origin=[]),
         value={v: normal_ids[v] for v in samples})
@@ -80,7 +79,6 @@ def create_somatic_calling_workflow(
             paths_refdir['reference'],
             paths_refdir['reference_vep'],
             chromosomes,
-            mgd.InputInstance('sample_id'),
         ),
         kwargs={
             'normal_id': mgd.TempInputObj('normal_id', 'sample_id'),

@@ -1,5 +1,4 @@
 import os
-
 import pypeliner
 import pypeliner.managed as mgd
 from wgs.config import config
@@ -57,7 +56,6 @@ def cohort_qc_workflow(args):
         args=(
             mgd.InputInstance("cohort_label",),
             sample_labels,
-            mgd.InputFile('germline_mafs_dict', 'cohort_label', 'sample_label', fnames=germline_mafs, axes_origin=[]),
             mgd.InputFile('somatic_mafs_dict', 'cohort_label', 'sample_label', fnames=somatic_mafs, axes_origin=[]),
             mgd.OutputFile('cohort_maf_oncogenic_filtered', 'cohort_label', fnames=cohort_maf_oncogenic_filtered),
             api_key

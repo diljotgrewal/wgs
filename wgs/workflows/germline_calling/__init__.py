@@ -177,7 +177,6 @@ def create_germline_calling_workflow(
             mgd.OutputFile("germlines_consensus.maf", 'sample_id',
                            fnames=consensus_germline_maf),
             chromosomes,
-            mgd.InputInstance('sample_id'),
             paths_refdir['reference_vep'],
             mgd.TempInputObj('normal_id', 'sample_id')
         ),

@@ -66,7 +66,7 @@ def cna_annotation_workflow(sample_labels, cohort, remixt_dict, output_table, se
 
 
 
-def preprocess_mafs_workflow(cohort, sample_labels, germline_maf_dict, somatic_maf_dict, merged_annotated_maf, api_key
+def preprocess_mafs_workflow(cohort, sample_labels, somatic_maf_dict, merged_annotated_maf, api_key
 ):
 
     workflow = pypeliner.workflow.Workflow(
@@ -75,29 +75,9 @@ def preprocess_mafs_workflow(cohort, sample_labels, germline_maf_dict, somatic_m
 
     workflow.setobj(
         obj=mgd.OutputChunks('sample_label'),
-        value=list(germline_maf_dict.keys()),
+        value=list(somatic_maf_dict.keys()),
     )
 
-    workflow.transform(
-        name='annotate_germline_mafs',
-        func='wgs.workflows.cohort_qc.tasks.annotate_maf_with_oncokb',
-        axes=("sample_label",),
-        args=(
-            mgd.InputFile('germlne_maf', 'sample_label', fnames=germline_maf_dict),
-            api_key,
-            mgd.TempSpace("annotated_germline_maf_tmp", 'sample_label'),
-            mgd.TempOutputFile("annotated_germline_maf", 'sample_label'),
-        ),
-    )
-    workflow.transform(
-        name='filter_germline_mafs',
-        func='wgs.workflows.cohort_qc.tasks.filter_maf',
-        axes=("sample_label",),
-        args=(
-            mgd.TempInputFile("annotated_germline_maf", 'sample_label'),
-            mgd.TempOutputFile("filtered_germline_maf", "sample_label")
-        ),
-    )
     workflow.transform(
         name='annotate_somatic_mafs',
         func='wgs.workflows.cohort_qc.tasks.annotate_maf_with_oncokb',
@@ -110,16 +90,7 @@ def preprocess_mafs_workflow(cohort, sample_labels, germline_maf_dict, somatic_m
         ),
     )
 
-    workflow.transform(
-        name='annotate_germline_class',
-        func='wgs.workflows.cohort_qc.tasks.annotate_germline_somatic',
-        axes=("sample_label",),
-        args=(
-            mgd.TempInputFile('filtered_germline_maf', 'sample_label'),
-            mgd.TempOutputFile("filtered_class_labeled_germline_maf", 'sample_label'),
-            True
-        ),
-    )
+
 
     workflow.transform(
         name='annotate_somatic_class',
@@ -138,7 +109,6 @@ def preprocess_mafs_workflow(cohort, sample_labels, germline_maf_dict, somatic_m
         args=(
             sample_labels,
             cohort,
-            mgd.TempInputFile('filtered_class_labeled_germline_maf', 'sample_label', axes_origin=[]),
             mgd.TempInputFile('class_labeled_somatic_maf', 'sample_label', axes_origin=[]),
             mgd.OutputFile(merged_annotated_maf),
         ),
