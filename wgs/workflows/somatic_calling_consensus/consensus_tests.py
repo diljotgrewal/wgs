@@ -64,7 +64,6 @@ def add_entry_to_vcf(record, v, tmpdir):
     gunzipped = v.replace(".gz", "")
 
     recordstr = record_to_str(record, gunzipped, tmpdir)
-    print(recordstr)
     #write
     with open(gunzipped, "at") as f:
         f.write(recordstr + "\n")
@@ -110,9 +109,9 @@ def run_consensus_test(vcfs, test1, test2, tmpdir):
     counts = os.path.join(tmpdir, "counts.tsv")
 
     consensus.main(vcfs["museq"], 
-        vcfs["freebayes"], 
-        vcfs["rtg"], 
-        vcfs["samtools"], 
+        vcfs["strelka"], 
+        vcfs["mutect"], 
+        vcfs["strelka_indel"], 
         consensus_vcf, 
         counts, 
         chroms    
@@ -159,9 +158,9 @@ def run_normalize_test(vcfs, test1, test2, a1, r1, a2, r2, tmpdir):
     counts = os.path.join(tmpdir, "counts.tsv")
 
     consensus.main(vcfs["museq"], 
-        vcfs["freebayes"], 
-        vcfs["rtg"], 
-        vcfs["samtools"], 
+        vcfs["strelka"], 
+        vcfs["mutect"], 
+        vcfs["strelka_indel"], 
         consensus_vcf, 
         counts, 
         chroms    
@@ -173,84 +172,87 @@ def run_normalize_test(vcfs, test1, test2, a1, r1, a2, r2, tmpdir):
     
 
 
-def test_museq_freebayes(freebayes, museq, rtg, samtools, testdir):
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}
-    run_consensus_test(vcfs, "museq", "freebayes", testdir)
+def test_museq_strelka(museq, strelka, strelka_indel, mutect, testdir):
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": mutect}
+    run_consensus_test(vcfs, "museq", "strelka", testdir)
 
-def test_museq_rtg(freebayes, museq, rtg, samtools, testdir):
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}
-    run_consensus_test(vcfs, "rtg", "museq", testdir)
+def test_museq_strelka_indel(museq, strelka, strelka_indel, mutect, testdir):
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": mutect}
+    run_consensus_test(vcfs, "museq", "strelka_indel", testdir)
 
-def test_museq_samtools(freebayes, museq, rtg, samtools, testdir):
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}
-    run_consensus_test(vcfs, "samtools", "museq", testdir)
+def test_museq_mutect(museq, strelka, strelka_indel, mutect, testdir):
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": mutect}
+    run_consensus_test(vcfs, "museq", "mutect", testdir)
 
-def test_samtools_rtg(freebayes, museq, rtg, samtools, testdir):
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}
-    run_consensus_test(vcfs, "samtools", "rtg", testdir)
+def test_strelka_mutect(museq, strelka, strelka_indel, mutect, testdir):
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": mutect}
+    run_consensus_test(vcfs, "strelka", "mutect", testdir)
 
-def test_samtools_freebayes(freebayes, museq, rtg, samtools, testdir):
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}
-    run_consensus_test(vcfs, "samtools", "freebayes", testdir)
+def test_strelka_strelka_indel(museq, strelka, strelka_indel, mutect, testdir):
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": mutect}
+    run_consensus_test(vcfs, "strelka", "strelka_indel", testdir)
 
-def test_rtg_freebayes(freebayes, museq, rtg, samtools, testdir):
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}
-    run_consensus_test(vcfs, "rtg", "freebayes", testdir)
+def test_mutect_strelka_indel(museq, strelka, strelka_indel, mutect, testdir):
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": mutect}
+    run_consensus_test(vcfs, "mutect", "strelka_indel", testdir)
 
-def test_normalization_1(freebayes, museq, rtg, samtools, testdir):
+
+def test_normalization_1(museq, strelka, strelka_indel, mutect, testdir):
     # A-> AT and AT->ATT
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}   
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": samtools}   
     r1 =  "A"
     a1 = "AT"
     r2 = "AT"
     a2 = "ATT"
-    consensus_variant =  run_normalize_test(vcfs, "rtg", "samtools",  a1, r1, a2, r2, testdir)
+    consensus_variant =  run_normalize_test(vcfs, "strelka", "museq",  a1, r1, a2, r2, testdir)
 
     assert consensus_variant.REF == "A"
     assert consensus_variant.ALT == "AT"
 
-def test_normalization_2(freebayes, museq, rtg, samtools, testdir):
-    #  GTA -> G and GTATA -> GTA
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}   
+def test_normalization_2(museq, strelka, strelka_indel, mutect, testdir):
+    # A-> AT and AT->ATT
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": samtools}    
     r1 =  "GTA"
     a1 = "G"
     r2 = "GTATA"
     a2 = "GTA"
-    consensus_variant =  run_normalize_test(vcfs, "rtg", "samtools",  a1, r1, a2, r2, testdir)
+    consensus_variant =  run_normalize_test(vcfs, "strelka", "museq",  a1, r1, a2, r2, testdir)
 
     assert consensus_variant.REF == "GTA"
     assert consensus_variant.ALT == "G"
 
-def test_normalization_3(freebayes, museq, rtg, samtools, testdir):
-    #   CA -> CTA  and C -> CT 
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}   
+def test_normalization_3(museq, strelka, strelka_indel, mutect, testdir):
+    # A-> AT and AT->ATT
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": samtools}    
     r1 =  "CA"
     a1 = "CTA"
     r2 = "C"
     a2 = "CT"
-    consensus_variant =  run_normalize_test(vcfs, "rtg", "samtools",  a1, r1, a2, r2, testdir)
+    consensus_variant =  run_normalize_test(vcfs, "strelka", "museq",  a1, r1, a2, r2, testdir)
 
     assert consensus_variant.REF == "C"
     assert consensus_variant.ALT == "CT"
 
-def test_normalization_4(freebayes, museq, rtg, samtools, testdir):
-    #  T -> TAC and T -> TACACAC
-    vcfs = {"freebayes": freebayes, "museq": museq, "rtg": rtg, "samtools": samtools}   
+def test_normalization_3(museq, strelka, strelka_indel, mutect, testdir):
+    # A-> AT and AT->ATT
+    vcfs = {"museq": museq, "strelka": strelka, "strelka_indel": strelka_indel, "mutect": samtools}    
     r1 =  "T"
     a1 = "TAC"
     r2 = "T"
     a2 = "TACACAC"
-    consensus_variant =  run_normalize_test(vcfs, "rtg", "samtools",  a1, r1, a2, r2, testdir)
+    consensus_variant =  run_normalize_test(vcfs, "strelka", "museq",  a1, r1, a2, r2, testdir)
 
     assert consensus_variant.REF == "T"
     assert consensus_variant.ALT == "TAC"
 
-freebayes = "/juno/work/shah/isabl_data_lake/analyses/63/79/6379/results/germline/SA1181_N/SA1181_N_freebayes_germline.vcf.gz"
-museq = "/juno/work/shah/isabl_data_lake/analyses/63/79/6379/results/germline/SA1181_N/SA1181_N_museq_single_annotated.vcf.gz"
-rtg = "/juno/work/shah/isabl_data_lake/analyses/63/79/6379/results/germline/SA1181_N/SA1181_N_rtg_germline.vcf.gz"
-samtools = "/juno/work/shah/isabl_data_lake/analyses/63/79/6379/results/germline/SA1181_N/SA1181_N_samtools_germline.vcf.gz"
 
-test_museq_freebayes(freebayes, museq, rtg, samtools, "/juno/work/shah/abramsd/CODE/TEST")
+museq = "/juno/work/shah/isabl_data_lake/analyses/78/36/7836/results/somatic/SA609T/SA609T_museq_paired_annotated.vcf.gz" 
+strelka = "/juno/work/shah/isabl_data_lake/analyses/78/36/7836/results/somatic/SA609T/SA609T_strelka_snv_annotated.vcf.gz"
+strelka_indel = "/juno/work/shah/isabl_data_lake/analyses/78/36/7836/results/somatic/SA609T/SA609T_strelka_indel_annotated.vcf.gz"
+mutect = "/juno/work/shah/isabl_data_lake/analyses/78/36/7836/results/somatic/SA609T/SA609T_mutect.vcf.gz"
+
+
+test_museq_strelka(museq, strelka, strelka_indel, mutect, "/juno/work/shah/abramsd/CODE/TEST")
 
 # make_test("/juno/work/shah/abramsd/CODE/TEST/SA1181_N_freebayes_germline.vcf.gz",
 # "/juno/work/shah/abramsd/CODE/TEST/SA1181_N_museq_single_annotated.vcf.gz")

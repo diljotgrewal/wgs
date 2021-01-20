@@ -48,7 +48,10 @@ def get_counts(record, caller, sample_id):
         alt = sample['AC']
     elif caller == 'freebayes':
         depth = sample['DP']
-        ref = sample['RO']
+        try:
+            ref = sample['RO']
+        except Exception:
+            print(sample, record, "\n\nHERE")
         alt = sample['AO']
     elif caller == 'rtg':
         depth = sample['DP']
