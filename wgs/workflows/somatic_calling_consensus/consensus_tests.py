@@ -7,7 +7,6 @@ import pypeliner
 from shutil import copyfile
 import csv
 
-
 def get_test_line(v1, v2, n=10000):
     #choose a random chrom
     not_matched = False
@@ -34,15 +33,17 @@ def record_to_str(record, f, tmpdir):
     r = vcf.Reader(open(dummyfile, "rt"))
     w = vcf.Writer(open(dummyfile, "at"), r)  
 
-    ffs = w._map(str, [record.CHROM, record.POS, record.ID, record.REF] \
-            + [w._format_alt(record.ALT), record.QUAL or '.', w._format_filter(record.FILTER),
-                w._format_info(record.INFO)])
+    template_record = next(r)
 
-    if record.FORMAT:
-        ffs.append(record.FORMAT)
+    ffs = w._map(str, [record.CHROM, record.POS, template_record.ID, record.REF] \
+            + [w._format_alt(record.ALT), template_record.QUAL or '.', w._format_filter(template_record.FILTER),
+                w._format_info(template_record.INFO)])
 
-    samples = [w._format_sample(record.FORMAT, sample)
-        for sample in record.samples]   
+    if template_record.FORMAT:
+        ffs.append(template_record.FORMAT)
+
+    samples = [w._format_sample(template_record.FORMAT, sample)
+        for sample in template_record.samples]   
 
     w.close()
 
@@ -64,6 +65,7 @@ def add_entry_to_vcf(record, v, tmpdir):
     gunzipped = v.replace(".gz", "")
 
     recordstr = record_to_str(record, gunzipped, tmpdir)
+
     #write
     with open(gunzipped, "at") as f:
         f.write(recordstr + "\n")
@@ -77,6 +79,7 @@ def add_entry_to_vcf(record, v, tmpdir):
 
     #now reindex
     pypeliner.commandline.execute("tabix", "-f", "-p", "vcf", v)
+
 
 
 def run_consensus_test(vcfs, test1, test2, tmpdir):
@@ -99,13 +102,14 @@ def run_consensus_test(vcfs, test1, test2, tmpdir):
     add_entry_to_vcf(record, testfile2, tmpdir) 
 
     reader1 = vcf.Reader(filename=testfile1)
-    assert next(reader1.fetch(record.CHROM, start=record.POS-1, end=record.POS))
+    assert next(reader1.fetch(record.CHROM, start=record.POS-1, end=rec
+    ord.POS))
     reader2 = vcf.Reader(filename=testfile2)
     assert next(reader2.fetch(record.CHROM, start=record.POS-1, end=record.POS))
 
     #run consensus
     chroms = list(map(str, list(range(1, 23)) + ["X"]))
-    consensus_vcf = os.path.join(tmpdir, "consensus.vcf.gz")
+    consensus_vcf = os.path.join(tmpdir, "consensus.vcf")
     counts = os.path.join(tmpdir, "counts.tsv")
 
     consensus.main(vcfs["museq"], 
@@ -118,8 +122,8 @@ def run_consensus_test(vcfs, test1, test2, tmpdir):
     )
 
     #read in consensus vcf and make sure the variant is included
-    consensus_reader = vcf.Reader(filename=consensus_vcf)
-    assert next(consensus_reader.fetch(line.CHROM, start=line.POS-1, end=line.POS))
+    consensus_reader = pd.read_csv(consensus_vcf, sep="\t")
+    assert not consensus_reader[(consensus_reader.POS==record.POS) & consensus_reader["#CHROM"]==record.CHROM].empty
 
 
 def run_normalize_test(vcfs, test1, test2, a1, r1, a2, r2, tmpdir):
@@ -154,7 +158,7 @@ def run_normalize_test(vcfs, test1, test2, a1, r1, a2, r2, tmpdir):
 
     #run consensus
     chroms = list(map(str, list(range(1, 23)) + ["X"]))
-    consensus_vcf = os.path.join(tmpdir, "consensus.vcf.gz")
+    consensus_vcf = os.path.join(tmpdir, "consensus.vcf")
     counts = os.path.join(tmpdir, "counts.tsv")
 
     consensus.main(vcfs["museq"], 
@@ -167,8 +171,8 @@ def run_normalize_test(vcfs, test1, test2, a1, r1, a2, r2, tmpdir):
     )
 
     #read in consensus vcf and make sure the variant is included
-    reader = vcf.Reader(filename=consensus_vcf)
-    return next(reader.fetch(line.CHROM, start=line.POS-1, end=line.POS))
+    consensus_reader = pd.read_csv(consensus_vcf, sep="\t")
+    assert not consensus_reader[(consensus_reader.POS==record.POS) & consensus_reader["#CHROM"]==record.CHROM].empty
     
 
 
